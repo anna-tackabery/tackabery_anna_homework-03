@@ -1,0 +1,6 @@
+Model,Predictors
+4,water treatment + species name
+1,sla + water treatment + species name
+3,sla + species name
+2,sla + water treatment
+0,no predictors
