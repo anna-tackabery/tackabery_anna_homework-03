@@ -221,13 +221,42 @@ The affective visualization could look like for my personal data a plot with two
 
 **2c. Make a draft of your visualization. (12 points)**
 
+```{r}
+personal_data <- read_csv("anna_personal_data.csv")
+personal_data_clean <- personal_data |> #new df
+  select(minutes_biked, time_of_day) |> #select columns
+  mutate(time_of_day = fct_relevel(time_of_day, "Morning", "Afternoon", "Night")) #reorder columns
 
-If you are making your visualization in R, show the annotated code and the output.
+```
 
-If you are making your visualization outside of R, include a photo of your visualization in your submission.
+#### **b. Visualization (6 points)**
+
+```{r}
+
+ggplot(data = personal_data_clean, # use the clean data frame
+       aes(x = time_of_day, # x-axis
+           y = minutes_biked, #y-axis
+           color = time_of_day)) + #color by time of day
+  scale_color_manual(values = c("Morning" = "yellow2","Afternoon" = "orange2", "Night" = "blue")) + #color by time of day
+  geom_point(position = position_jitter(width = 0.05, #jitter plot width
+                                        seed = 1), #random seed value
+             alpha = 0.3) + #transparency levels of points
+  stat_summary(geom = "pointrange", #Use pointrange geometry to display mean and confidence interval
+               fun.data = mean_se) + #compute mean and se
+  labs(x = "Time of Day", #label x
+       y = "Time Spent Biking (minutes)") + #label y
+  theme_classic() + #classic theme
+  theme(legend.position = "none") #no legend
+
+```
+This is the draft of the plot I will make and now I will make it into art.
+
+
 
 **2d. Write an artist statement. (8 points)**
 An artist statement gives the audience context to understand your work. Write 4-5 sentences to address:
+
+I am showing the amount of time I bike based on the time of day. I wanted to make the image a visual representation of what the data meant. I did my work on digital drawing on my ipad. I created the work by making a plot as a background, so I could tie the visual to the data. I then worked on making the drawing a visual representation of the data. I used the color to show what time of day the data was. I used handle bars to show the range of the data. I used an image of a clock to show how much time had passed. (increments of 1 minute)
 
 the content of your piece (what are you showing?)
 the influences (what did techniques/artists/etc. did you find influential in creating your work?)
@@ -238,14 +267,14 @@ Pro
 **3a. Revisit and summarize (6 points)**
 **What are the statistical tests the authors are using to address their main research question?**
 
-The statistical tests that the authors use to address their main research question are Student t test or bivariate Pearson correlation analyses and linear regression models. 
+The statistical tests that the authors use to address their main research question, which variables are predictive of stigmatization in bipolar disorder?, are Student t test or bivariate Pearson correlation analyses and linear regression models. 
 
 **Insert the figure or table you described in Homework 2 here.**
 
 **3b. Visual clarity (10 points)**
 **How clearly did the authors visually represent their statistics in figures? For example, are the x- and y-axes in a logical position? Do they show summary statistics (means and SE, for example) and/or model predictions, and if so, do they show the underlying data?**
 
-I don't think the authors were very clear in their visual representation of the statistical analysis. The figure is not on an x-y coordinate it is a model showing the predictors showing regression beta weights and correlation coefficients.The figure does not show SE or CIs. It doesn't show underlying data just thicker arrows for predictors that have a higher coefficient.
+I don't think the authors were very clear in their visual representation of the statistical analysis. The figure is not on an x-y coordinate it is a model showing the predictors showing regression beta weights and correlation coefficients.The figure does not show SE or CIs. It doesn't show underlying data just thicker arrows for predictors that have a higher coefficient. I think this figure is very simple so it can easily be understood by people who are not experts in pschyology research, but for scientists I think it would be over simplified. 
 
 **3c. Aesthetic clarity (10 points)**
 **How well did the authors handle “visual clutter”? How would you describe the the data:ink ratio?**

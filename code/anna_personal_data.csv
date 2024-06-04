@@ -1,0 +1,43 @@
+date,minutes_biked,number_of_classes,late,traffic,red_light,time_of_day,starting_pt,ending_pt
+4/24,8,3,Yes,No,No,Morning,Home,ILP
+4/29,8,2,No,No,Yes,Afternoon,Home,Arbor
+4/29,6,2,No,No,No,Afternoon,Arbor,Home
+4/30,7,0,No,No,No,Morning,Home,Arbor
+4/30,4,0,No,No,Yes,Afternoon,Arbor,SRB
+4/30,4,0,No,No,No,Afternoon,Home,Friends house
+4/30,4,0,No,No,No,Night,Friends house ,Home
+5/1,5,3,Yes,No,No,Morning,Home,ILP
+5/1,2.5,3,No,No,No,Morning,ILP,South Hall
+5/1,6,3,No,No,No,Afternoon,South Hall,Home
+5/1,7,3,No,No,No,Night,Home,Devs
+5/1,7.5,3,No,No,No,Night,Devs,Home
+5/2,5,1,Yes,No,No,Morning,Home,Arbor
+5/2,5,1,No,No,No,Afternoon,Arbor,Home
+5/2,4,1,No,No,No,Afternoon,Home,HSSB
+5/2,3.5,1,Yes,Yes,No,Night,HSSB,Home
+5/6,5.5,2,No,No,No,Morning,Home,Arbor
+5/6,2.5,2,Yes,No,Yes,Afternoon,Arbor,Student Health
+5/6,3,2,No,No,No,Afternoon,Student Health,Home
+5/7,4,0,Yes,No,No,Morning,Home,Arbor
+5/7,5.5,0,No,Yes,No,Night,Arbor,Home
+5/8,5,3,Yes,Yes,No,Morning,Home,ILP
+5/8,4,3,Yes,Yes,No,Night,ILP,Home
+5/8,5,3,Yes,No,No,Night,Home,GGG
+5/8,3.5,3,Yes,Yes,No,Night,GGG,Dt IV
+5/8,4,3,No,No,No,Night,Dt IV,Home
+5/9,5,3,Yes,No,No,Morning,Home,Arbor
+5/9,6,3,No,No,Yes,Afternoon,Arbor,Home
+5/9,4,3,Yes,No,No,Night,Home,HSSB
+5/9,4,3,No,No,No,Night,HSSB,Home
+5/11,5,0,No,No,No,Night,Home,Arbor
+5/11,5.5,0,No,No,No,Night,Arbor,Home
+5/12,5.5,0,No,No,No,Night,Home,Arbor
+5/12,5,0,No,No,No,Night,Arbor,Home
+5/13,6,2,No,No,No,Morning,Home,Arbor
+5/13,5,2,No,No,No,Night,Arbor,Home
+5/14,6,0,No,No,No,Night,Home,Arbor
+5/14,5.5,0,No,No,No,Night,Arbor,Home
+5/15,4.5,3,Yes,No,No,Morning,Home,ILP
+5/15,5,3,No,No,No,Night,ILP,Home
+5/28,5,0,Yes,No,No,Morning,Home,Arbor
+5/28,5.5,0,No,No,No,Afternoon,Arbor,Home
