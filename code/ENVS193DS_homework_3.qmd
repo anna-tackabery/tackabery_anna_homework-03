@@ -1,0 +1,439 @@
+---
+title: "Homework starter document"
+format:
+  html: 
+    toc: true # includes a table of contents in rendered html format
+execute: # for all code chunks
+    warning: false # do not display warnings
+    message: false # do not display messages
+---
+
+# Set up
+
+## reading in packages
+
+```{r}
+# general use
+library(tidyverse)
+library(readxl)
+library(here)
+library(janitor)
+
+# visualizing pairs
+library(GGally)
+
+# model selection
+library(MuMIn)
+
+# model predictions
+library(ggeffects)
+
+# model tables
+library(gtsummary)
+library(flextable)
+library(modelsummary)
+
+drought_exp <- read_xlsx(path = here("data", 
+                                     "Valliere_etal_EcoApps_Data.xlsx"),
+                         sheet = "First Harvest")
+
+# quick look at data 
+str(drought_exp)
+class(drought_exp)
+```
+
+## cleaning
+
+```{r}
+# cleaning
+drought_exp_clean <- drought_exp %>% 
+  clean_names() %>% # nicer column names
+  mutate(species_name = case_when( # adding column with species scientific names
+    species == "ENCCAL" ~ "Encelia californica", # bush sunflower
+    species == "ESCCAL" ~ "Eschscholzia californica", # California poppy
+    species == "PENCEN" ~ "Penstemon centranthifolius", # Scarlet bugler
+    species == "GRICAM" ~ "Grindelia camporum", # great valley gumweed
+    species == "SALLEU" ~ "Salvia leucophylla", # Purple sage
+    species == "STIPUL" ~ "Nasella pulchra", # Purple needlegrass
+    species == "LOTSCO" ~ "Acmispon glaber" # deerweed
+  )) %>% 
+  relocate(species_name, .after = species) %>% # moving species_name column after species
+  mutate(water_treatment = case_when( # adding column with full treatment names
+    water == "WW" ~ "Well watered",
+    water == "DS" ~ "Drought stressed"
+  )) %>% 
+  relocate(water_treatment, .after = water) # moving water_treatment column after water
+```
+
+# Visualizing
+
+## correlations 
+
+```{r}
+ggpairs(drought_exp_clean, # data frame
+        columns = c("leaf_dry_weight_g", # columns to visualize
+                    "sla", 
+                    "shoot_g", 
+                    "root_g", 
+                    "total_g"), 
+        upper = list(method = "pearson")) + # calculating Pearson correlation coefficient
+  theme_bw() + # cleaner theme
+  theme(panel.grid = element_blank()) # getting rid of gridlines
+```
+
+Choose 3 pairs of variables to compare. Make notes of those comparisons below.    
+
+**leaf_dry_weight and sla are not strongly correlated (Pearson's r = 0.033).**  
+
+**shoot mass and total mass are strongly positively correlated by (Pearson's r = 0.902)**  
+
+**Shoot mass is positively correlated with rootmass (Peasrson's r = 0.553)**
+
+## Preliminary visualizations  
+
+If you aren't familiar with each plant species, google them!  
+
+Then go exploring! Visually.  
+
+In this scenario, we're interested in how three variables affect total biomass: species (categorical), water treatment (categorical), specific leaf area (SLA, numeric).  
+
+**Note:** it is totally ok (and encouraged) to explore these separately!
+
+### how does total biomass differ between species?
+
+```{r}
+ggplot(data = drought_exp_clean, # data frame
+       aes(x = reorder(species_name, # reordering x-axis
+                       -total_g, # in reverse order of mean total mass
+                       fun = mean), # calculating mean to reorder
+           y = total_g)) + # y-axis
+  geom_jitter(width = 0.1, # narrow jitter
+              height = 0) # not jittering points up and down
+```
+
+**plants with higher biomass have a larger ranges. Grindelia has highest biomass, Acmispon has lowest biomass.**
+
+### how does total biomass differ between water treatments?
+
+```{r}
+ggplot(data = drought_exp_clean, # data frame
+       aes(x = water_treatment, # x-axis
+           y = total_g)) + # y-axis
+  geom_jitter(width = 0.1, # narrow jitter
+              height = 0) # not jittering points up and down
+```
+
+**Biomass is greater in plants that are well watered, makes sense based off how plants work.**
+
+### how does specific leaf area (SLA) influence total biomass?
+
+```{r}
+ggplot(data = drought_exp_clean, # data frame
+       aes(x = sla, # x-axis
+           y = total_g)) + # y-axis
+  geom_point() # scatterplot
+```
+
+**Specific leave area does not really effect total biomass visually, but check correlation and compare evidence. Visual and statistical.**
+
+# Model construction
+
+What is the null model?  
+
+0. **total mass is not predicted by any of the three predictors.**  
+
+What is the saturated model?  
+
+1. **total mass predicted by sla, water treatment, and species.**  
+
+In class we are going to try two more models:  
+
+2.  **total biomass as a function of SLA and water treatment**  
+3.  **total biomass as a function of SLA and species**  
+
+For homework, you will construct one more model:  
+
+4. **total biomass as a function of water treatment and species**  
+
+You will then compare all 5 models to determine which best describes total biomass. **For your homework, you will need to create a table summarizing the structure of these models.**
+
+## 0. Null model
+
+```{r}
+model0 <- lm(total_g ~ 1, # formula
+             data = drought_exp_clean) # data frame
+```
+
+## 1. total biomass as a function of SLA, water treatment, and species
+
+```{r}
+# saturated model
+model1 <- lm(total_g ~ sla + water_treatment + species_name,
+             data = drought_exp_clean)
+
+par(mfrow = c(2, 2))
+plot(model1)
+# you might get a warning when you run this code - that is ok!
+```
+
+Diagnostics for saturated model look good!
+
+
+## 2. total biomass as a function of SLA and water treatment
+
+```{r}
+model2 <- lm(total_g ~ sla + water_treatment,
+             data = drought_exp_clean)
+
+plot(model2)
+```
+
+look at the diagnostics
+
+## 3. total biomass as a function of SLA and species
+
+```{r}
+model3 <- lm(total_g ~ sla + species_name,
+             data = drought_exp_clean)
+
+plot(model3)
+```
+
+look at the diagnostics
+
+
+**Model 3**Insert code here
+```{r}
+model4 <- lm(total_g ~ water_treatment + species_name,
+             data = drought_exp_clean)
+
+plot(model4)
+
+```
+
+# Model selection
+
+From the `MuMIn` package
+
+```{r}
+model.sel(model0,
+          model1, 
+          model2, 
+          model3,
+          model4)
+```
+
+Model with lowest AIC is best. Top model is the best predictor of total mass without complications. Delta for the best model will always be 0.
+
+Out of the four models we have tried, the best model is the one that includes **all three predictors (specific leaf area, water treatment, and species).**  
+
+Note that this may change once you fit and compare the other model!
+
+**look at diagnostics again**
+
+# Model summary
+
+```{r}
+summary(model4)
+```
+
+What are the reference levels?  
+
+- reference for `water_treatment`  
+- reference for `species_name`  
+
+**reference for water_treatment:** **water_treatmentDrought stressed**  
+**reference for species_name:** **species_nameAcmispon Glaber **  
+
+Interpret the model estimates for the:  
+
+- intercept: **mass of Acmispon glaber in drought stressed treatment when SLA = 0**  
+- SLA slope: **across drought treatment and species with each 1 unit increase in SLA (m^2/dry mass), we expect an increase in total mass of -0.00025 WHICH MEANS WITH THE ESTIMATE AND SE THERE IS NO AFFECT OF SLA ON TOTAL MASS.**  estimate is close to 0 and SE contains 0 and the P-value was non significant
+- well watered estimate: **across species and SLA, well watered plants tend to be 0.12 +- (Figure out how to write plus minus in text) 0.02 g heavier than drought stress plants.**    
+- Lotus scoparius estimate: **insert response here**    
+- Stipa pulchra estimate: **insert response here**    
+
+# Model predictions
+
+**Note:** only plot terms in the model you select - if your doesn't include one of these terms, take it out and adjust the plotting code accordingly!
+
+```{r}
+model_preds <- ggpredict(model1, 
+                         terms = c("water_treatment", 
+                                   "species_name"))
+
+# use View(model_preds) to see the predictions as a data frame
+# use model_preds to see the predictions formatted nicely
+```
+
+# Visualization
+
+**Note:** this is the quick way to visualize model predictions. For your homework, you may find it easier to plot things yourself (i.e. not using the `plot()` functionality within `ggeffects`). See lecture for an example of how to do this.  
+
+```{r}
+# plot function within ggeffects
+plot(model_preds, # model predictions
+     limit_range = TRUE, # limit the range of predictions to the range of predictor values
+     show_data = TRUE) + # show the underlying data
+  # everything below this is ggplot() stuff
+  theme_classic() + # classic theme
+  labs(title = "Preliminary model visualization") + # plot title
+  theme(panel.grid = element_blank())  # getting rid of gridlines
+```
+
+The "more customizable" way:
+
+```{r}
+# creating new data frame of model predictions for plotting
+model_preds_for_plotting <- model_preds %>% 
+  rename(sla = x, # renaming columns to make this easier to use
+         water_treatment = group,
+         species_name = facet)
+
+# use View(model_preds_for_plotting) 
+# to compare this to the original model_preds data frame
+
+ggplot() +
+  # underlying data
+  geom_point(data = drought_exp_clean,
+             aes(x = sla,
+                 y = total_g,
+                 color = water_treatment)) +
+  # model prediction 95% CI ribbon
+  geom_ribbon(data = model_preds_for_plotting,
+              aes(x = sla, 
+                  y = predicted,
+                  ymin = conf.low,
+                  ymax = conf.high,
+                  fill = water_treatment),
+              alpha = 0.2) +
+  # model prediction lines
+  geom_line(data = model_preds_for_plotting,
+            aes(x = sla, 
+                y = predicted,
+                color = water_treatment)) +
+  # cleaner theme
+  theme_classic() +
+  # creating different panels for species
+  facet_wrap(~species_name) 
+```
+
+
+# Making a table
+
+```{r}
+# one option for a single model
+flextable::as_flextable(model4) 
+
+# another option for a single model
+gtsummary::tbl_regression(model4)
+
+# comparing models
+modelsummary::modelsummary( # this function takes a list of models
+  list( 
+    "null" = model0, # "model name" = model object
+    "model 1" = model1,
+    "model 2" = model2,
+    "model 3" = model3,
+    "model 4" = model4
+  )
+) 
+
+
+```
+
+**Note 1: notice all the information at the bottom of the `modelsummary` output - if you only needed the AIC and delta AIC, what could you do? see package documentation for help**
+
+**Note 2: you will always have to report the F-statistic, degrees of freedom, test statistic, p-value, ⍺, and R^2^. Whether or not this information is in a table is up to you.**
+
+a. Make a table or list of all the models from class and the last one you constructed on your own. Write a caption for your table. (8 points)
+
+```{r}
+model_table <- read_csv("model_table.csv")
+
+ft <- flextable::as_flextable(model_table) |> 
+  set_caption(caption = "Table 1. Water treatment and species names the best predictors for this model. This table shows the four models we have; water treatment + species name, saturated (all three), sla + species name, sla + water treatment, and the null (no predictors).")
+
+ft
+```
+
+Caption: table captions typically go above the table. Number the table and provide a title. Describe what is in the table (columns and rows).
+
+Table: In your table, each row should be a model with the model number (1, 2, 3, etc.) and the predictors for each model.
+
+
+
+b. Write a 5-6 sentence “statistical methods” section. (8 points)
+Your answer should be in paragraph form and include:
+
+I addressed the central question to examine the influence of specific leaf area, water treatment, and species on total plant mass. I did this using 5 models to see which combination of predictors describes the variation in plant mass. To determine the model that best described total plant mass I input all the models into a model selection table which showed the intercept, predictors in that model, the AICc and delta. Using the AIC to compare different versions of a model with variations in the predictors variables I chose the model with the lowest AIC which shows that the linear model predicts the data best. I visually determined that the final model conformed to the assumptions of a linear model, to evaluate the linear model assumptions ran the code to make a linear model with the predictions for model 4. I think visually confirmed that the Residuals vs Fitted and Scale- Location plots were normal, even, and linear; that the QQ Residuals plot was normal and followed for the most part a straight diagonal line; and that Constant Leverage: Residuals vs. Factor Levels didn't have an outliers that would alter the data modeling.
+
+c. Make a visualization of the model predictions with underlying data for your “best” model. (20 points)
+Show and annotate all your code. For full credit:
+
+```{r}
+ggpredict(model4, 
+          terms = c("water_treatment", 
+                    "species_name")) |> 
+  plot(show_data = TRUE) + # show the underlying data
+  #scale_color_manual(values = c(Encelia californica, Echscholzia californica, Grindelia camporum, Acmispon glaber, Nasella pulchra, Penstemon centranthifolius, Salvia leucophylla)) +
+  #scale_fill_manual(values = c(Well, Drought)) +
+  theme_classic() + # classic theme
+  labs(title = "Model 4 Predictions Visualization") + # plot title
+  theme(panel.grid = element_blank())  # getting rid of gridlines
+
+
+```
+
+# Visualization
+
+**Note:** this is the quick way to visualize model predictions. For your homework, you may find it easier to plot things yourself (i.e. not using the `plot()` functionality within `ggeffects`). See lecture for an example of how to do this.  
+
+```{r}
+# plot function within ggeffects
+
+```
+
+make the underlying data more transparent than the model predictions
+display species names in full (not as species codes like ENCCAL or ESCCAL)
+display water treatment types in full (not as WW or DS)
+represent well-watered and drought stressed treatments with different colors
+use colors that are not the default ggplot() colors
+facet your plot by species
+remove the legend
+finalize the plot
+
+d. Write a caption for your visualization. (6 points)
+Include a data citation.
+
+e. Write a 3-4 sentence results section. (10 points)
+Your answer should be in paragraph form and address the following points:
+
+what predictors “best” described total mass (include model statistics here)?
+on average, what differences did you find between water treatments?
+on average, what differences did you find between species?
+
+
+a. Revisit and summarize (6 points)
+**What are the statistical tests the authors are using to address their main research question?**
+
+The statistical tests that the authors use to address their main research question are Student t test or bivariate Pearson correlation analyses and linear regression models. 
+
+**Insert the figure or table you described in Homework 2 here.**
+
+b. Visual clarity (10 points)
+**How clearly did the authors visually represent their statistics in figures? For example, are the x- and y-axes in a logical position? Do they show summary statistics (means and SE, for example) and/or model predictions, and if so, do they show the underlying data?**
+
+I don't think the authors were very clear in their visual representation of the statistical analysis. The figure is not on an x-y coordinate it is a model showing the predictors showing regression beta weights and correlation coefficients.The figure does not show SE or CIs. It doesn't show underlying data just thicker arrows for predictors that have a higher coefficient.
+
+c. Aesthetic clarity (10 points)
+**How well did the authors handle “visual clutter”? How would you describe the the data:ink ratio?**
+
+The figure is not very cluttered, it is actually pretty simple. I would say there should be more data shown, it in my opinion over simplifies the statistical analysis. The data to ink ratio is like 1:5 the only significant part of the figure is the coefficients showing how significant the predictor variables are.
+
+d. Recommendations (can be longer than 4 sentences, 10 points)
+**What recommendations would you make to make the figure better? What would you take out, add, or change? Provide explanations/justifications for each of your recommendations.**
+
+I think this figure could be much more informational with some small changes. I would recommend showing the underlying data with SE and CI to demonstrate how significant, and confident the research is in there findings of which predictors are correlated to stigmatization. I think if the figure was on an x y coordinate and there was more than one figure to show the data from all the predictors it would be a better figure.
+
+
