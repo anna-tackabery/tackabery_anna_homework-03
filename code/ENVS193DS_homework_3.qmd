@@ -65,97 +65,8 @@ drought_exp_clean <- drought_exp %>%
   relocate(water_treatment, .after = water) # moving water_treatment column after water
 ```
 
-# Visualizing
 
-## correlations 
-
-```{r}
-ggpairs(drought_exp_clean, # data frame
-        columns = c("leaf_dry_weight_g", # columns to visualize
-                    "sla", 
-                    "shoot_g", 
-                    "root_g", 
-                    "total_g"), 
-        upper = list(method = "pearson")) + # calculating Pearson correlation coefficient
-  theme_bw() + # cleaner theme
-  theme(panel.grid = element_blank()) # getting rid of gridlines
-```
-
-Choose 3 pairs of variables to compare. Make notes of those comparisons below.    
-
-**leaf_dry_weight and sla are not strongly correlated (Pearson's r = 0.033).**  
-
-**shoot mass and total mass are strongly positively correlated by (Pearson's r = 0.902)**  
-
-**Shoot mass is positively correlated with rootmass (Peasrson's r = 0.553)**
-
-## Preliminary visualizations  
-
-If you aren't familiar with each plant species, google them!  
-
-Then go exploring! Visually.  
-
-In this scenario, we're interested in how three variables affect total biomass: species (categorical), water treatment (categorical), specific leaf area (SLA, numeric).  
-
-**Note:** it is totally ok (and encouraged) to explore these separately!
-
-### how does total biomass differ between species?
-
-```{r}
-ggplot(data = drought_exp_clean, # data frame
-       aes(x = reorder(species_name, # reordering x-axis
-                       -total_g, # in reverse order of mean total mass
-                       fun = mean), # calculating mean to reorder
-           y = total_g)) + # y-axis
-  geom_jitter(width = 0.1, # narrow jitter
-              height = 0) # not jittering points up and down
-```
-
-**plants with higher biomass have a larger ranges. Grindelia has highest biomass, Acmispon has lowest biomass.**
-
-### how does total biomass differ between water treatments?
-
-```{r}
-ggplot(data = drought_exp_clean, # data frame
-       aes(x = water_treatment, # x-axis
-           y = total_g)) + # y-axis
-  geom_jitter(width = 0.1, # narrow jitter
-              height = 0) # not jittering points up and down
-```
-
-**Biomass is greater in plants that are well watered, makes sense based off how plants work.**
-
-### how does specific leaf area (SLA) influence total biomass?
-
-```{r}
-ggplot(data = drought_exp_clean, # data frame
-       aes(x = sla, # x-axis
-           y = total_g)) + # y-axis
-  geom_point() # scatterplot
-```
-
-**Specific leave area does not really effect total biomass visually, but check correlation and compare evidence. Visual and statistical.**
-
-# Model construction
-
-What is the null model?  
-
-0. **total mass is not predicted by any of the three predictors.**  
-
-What is the saturated model?  
-
-1. **total mass predicted by sla, water treatment, and species.**  
-
-In class we are going to try two more models:  
-
-2.  **total biomass as a function of SLA and water treatment**  
-3.  **total biomass as a function of SLA and species**  
-
-For homework, you will construct one more model:  
-
-4. **total biomass as a function of water treatment and species**  
-
-You will then compare all 5 models to determine which best describes total biomass. **For your homework, you will need to create a table summarizing the structure of these models.**
+#Set Up Models
 
 ## 0. Null model
 
@@ -173,10 +84,8 @@ model1 <- lm(total_g ~ sla + water_treatment + species_name,
 
 par(mfrow = c(2, 2))
 plot(model1)
-# you might get a warning when you run this code - that is ok!
-```
 
-Diagnostics for saturated model look good!
+```
 
 
 ## 2. total biomass as a function of SLA and water treatment
@@ -188,7 +97,6 @@ model2 <- lm(total_g ~ sla + water_treatment,
 plot(model2)
 ```
 
-look at the diagnostics
 
 ## 3. total biomass as a function of SLA and species
 
@@ -199,10 +107,9 @@ model3 <- lm(total_g ~ sla + species_name,
 plot(model3)
 ```
 
-look at the diagnostics
 
+## 4. total biomass as a function of water treatment and species
 
-**Model 3**Insert code here
 ```{r}
 model4 <- lm(total_g ~ water_treatment + species_name,
              data = drought_exp_clean)
@@ -223,52 +130,21 @@ model.sel(model0,
           model4)
 ```
 
-Model with lowest AIC is best. Top model is the best predictor of total mass without complications. Delta for the best model will always be 0.
-
-Out of the four models we have tried, the best model is the one that includes **all three predictors (specific leaf area, water treatment, and species).**  
-
-Note that this may change once you fit and compare the other model!
-
-**look at diagnostics again**
-
 # Model summary
 
 ```{r}
 summary(model4)
 ```
 
-What are the reference levels?  
-
-- reference for `water_treatment`  
-- reference for `species_name`  
-
-**reference for water_treatment:** **water_treatmentDrought stressed**  
-**reference for species_name:** **species_nameAcmispon Glaber **  
-
-Interpret the model estimates for the:  
-
-- intercept: **mass of Acmispon glaber in drought stressed treatment when SLA = 0**  
-- SLA slope: **across drought treatment and species with each 1 unit increase in SLA (m^2/dry mass), we expect an increase in total mass of -0.00025 WHICH MEANS WITH THE ESTIMATE AND SE THERE IS NO AFFECT OF SLA ON TOTAL MASS.**  estimate is close to 0 and SE contains 0 and the P-value was non significant
-- well watered estimate: **across species and SLA, well watered plants tend to be 0.12 +- (Figure out how to write plus minus in text) 0.02 g heavier than drought stress plants.**    
-- Lotus scoparius estimate: **insert response here**    
-- Stipa pulchra estimate: **insert response here**    
-
 # Model predictions
-
-**Note:** only plot terms in the model you select - if your doesn't include one of these terms, take it out and adjust the plotting code accordingly!
 
 ```{r}
 model_preds <- ggpredict(model1, 
                          terms = c("water_treatment", 
                                    "species_name"))
-
-# use View(model_preds) to see the predictions as a data frame
-# use model_preds to see the predictions formatted nicely
 ```
 
 # Visualization
-
-**Note:** this is the quick way to visualize model predictions. For your homework, you may find it easier to plot things yourself (i.e. not using the `plot()` functionality within `ggeffects`). See lecture for an example of how to do this.  
 
 ```{r}
 # plot function within ggeffects
@@ -342,9 +218,6 @@ modelsummary::modelsummary( # this function takes a list of models
 
 ```
 
-**Note 1: notice all the information at the bottom of the `modelsummary` output - if you only needed the AIC and delta AIC, what could you do? see package documentation for help**
-
-**Note 2: you will always have to report the F-statistic, degrees of freedom, test statistic, p-value, ⍺, and R^2^. Whether or not this information is in a table is up to you.**
 
 a. Make a table or list of all the models from class and the last one you constructed on your own. Write a caption for your table. (8 points)
 
@@ -360,7 +233,6 @@ ft
 Caption: table captions typically go above the table. Number the table and provide a title. Describe what is in the table (columns and rows).
 
 Table: In your table, each row should be a model with the model number (1, 2, 3, etc.) and the predictors for each model.
-
 
 
 b. Write a 5-6 sentence “statistical methods” section. (8 points)
