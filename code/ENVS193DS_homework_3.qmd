@@ -1,5 +1,6 @@
 ---
-title: "Homework starter document"
+title: "Homework 3"
+author: "Anna Tackabery"
 format: docx
     toc: true # includes a table of contents in rendered html format
 execute: #for all code chunks
@@ -8,6 +9,7 @@ execute: #for all code chunks
 editor: 
   markdown: 
     wrap: 72
+date: "6/4/2024"
 ---
 
 # Set up
@@ -161,7 +163,7 @@ ft #print the table
 
 **1b. Write a 5-6 sentence “statistical methods” section. (8 points)** **Your answer should be in paragraph form and include:**
 
-I addressed the central question to examine the influence of specific leaf area, water treatment, and species on total plant mass. I did this using 5 models to see which combination of predictors, like a null (no predictors), saturated (all three predictors), and combinations of the predicts to describe the variation in plant mass. To determine the model that best described total plant mass I input all the models into a mulitple linear regression and applied Akaike's Information Criterion (AIC) which produced a model selection table which showed the intercept, predictors in that model, the AIC and delta. Using the AIC to compare different versions of a model with variations in the predictors variables I chose the model with the lowest AIC which shows that the linear model predicts the data best. I visually determined that the final model conformed to the assumptions of a linear model, to evaluate the linear model assumptions ran the code to make a linear model with the predictions for model 4. I think visually confirmed that the Residuals vs Fitted and Scale- Location plots were normal, even, and linear; that the QQ Residuals plot was normal and followed for the most part a straight diagonal line; and that Constant Leverage: Residuals vs. Factor Levels didn't have an outliers that would alter the data modeling.
+I addressed the central question to examine the influence of specific leaf area, water treatment, and species on total plant mass. I did this using 5 models to see which combination of predictors, like a null (no predictors), saturated (all three predictors), and combinations of the predicts to describe the variation in plant mass. To determine the model that best described total plant mass I input all the models into a mulitple linear regression and applied Akaike's Information Criterion (AIC) which produced a model selection table which showed the intercept, predictors in that model, the AIC and delta. Using the AIC to compare different versions of a model with variations in the predictors variables I chose the model with the lowest AIC, and a delta AIC of 0, which shows that the linear model predicts the data best. I visually determined that the final model conformed to the assumptions of a linear model by confirming that the Residuals vs Fitted and Scale- Location plots were normally distributed, even, and linear; that the QQ Residuals plot was normal and followed a straight diagonal line; and that Constant Leverage: Residuals vs. Factor Levels didn't have any outliers that would alter the data modeling.
 
 **1c. Make a visualization of the model predictions with underlying data for your “best” model. (20 points)** **Show and annotate all your code. For full credit:**
 
@@ -205,15 +207,17 @@ ggplot() + #start a plot
 
 **1e. Write a 3-4 sentence results section. (10 points)** **Your answer should be in paragraph form and address the following points:**
 
-The predictors that best describe total mass are water treatment and species name. (Multiple Linear Regression, F(7, 62) = 27.08, alpha = 0.05, p \< 0.001, R^2^ = 0.75). When looking at the data visualization, I found that there was more total mass when the plants underwent the Well watered treatment in comparison with the Drought stressed treatment. When the water treatment was neglected the data showed that between species, Encelia californica, Eschscholzia californica, Grindelia camporum, and Nasella pulchra tend to have greater total mass than Salvia leucophylla, Penstemon centranthifolius and Acmispon glaber.
+The predictors that best describe total mass are water treatment and species name. The best model is a Multiple Linear Regression, F(7, 62) = 27.08, alpha = 0.05, p \< 0.001, R^2^ = 0.75. When looking at the data visualization, I found that the total mass was greater when the plants underwent the Well watered treatment in comparison with the Drought stressed treatment. When the water treatment was neglected the data showed that between species, Encelia californica, Eschscholzia californica, Grindelia camporum, and Nasella pulchra tend to have greater total mass than Salvia leucophylla, Penstemon centranthifolius and Acmispon glaber.
 
 **2a. Describe in words what an affective visualization could look like for your personal data (3-5 sentences). (2 points)**
 
-The affective visualization could look like for my personal data a plot with two box plots to show the variation in data and then I want to draw in the background of the plot bike lanes, bikes, and bike related visuals to describe what the data shows.
+The affective visualization for my personal data will be a plot with handlebars indicating the range, variation, and mean. It will have three sections for morning, afternoon, and evening. The background will feature bike lanes, bikes, and related visuals to represent the data.
 
 **2b. Create a sketch (on paper) of your idea. (2 points)** **Include a photo of this sketch in your submission.**
 
 **2c. Make a draft of your visualization. (12 points)**
+
+The design behind the image:
 
 ```{r}
 personal_data <- read_csv("anna_personal_data.csv")
@@ -222,8 +226,6 @@ personal_data_clean <- personal_data |> #new df
   mutate(time_of_day = fct_relevel(time_of_day, "Morning", "Afternoon", "Night")) #reorder columns
 
 ```
-
-#### **b. Visualization (6 points)**
 
 ```{r}
 
@@ -244,13 +246,11 @@ ggplot(data = personal_data_clean, # use the clean data frame
 
 ```
 
-This is the draft of the plot I will make and now I will make it into art. Art piece below:
+The actual Art piece:
 
 **2d. Write an artist statement. (8 points)** An artist statement gives the audience context to understand your work. Write 4-5 sentences to address:
 
-I am showing the amount of time I bike based on the time of day. I wanted to make the image a visual representation of what the data meant. I did my work on digital drawing on my ipad. I created the work by making a plot as a background, so I could tie the visual to the data. I then worked on making the drawing a visual representation of the data. I used the color to show what time of day the data was. I used handle bars to show the range of the data. I used an image of a clock to show how much time had passed. (increments of 1 minute)
-
-the content of your piece (what are you showing?) the influences (what did techniques/artists/etc. did you find influential in creating your work?) the form of your work (written code, watercolor, oil painting, etc.) your process (how did you create your work?) Pro
+In my art I show the amount of time I bike based on the time of day. I wanted to make the image a visual representation of what the data meant, in a fun and creative way. I looked at the examples from Jill Pelto's Art. She used underlying data plots and drew art around and in the background of them. I did my work as a digital drawing on my ipad, after first coding to create the underlying data plot I wanted to base my work off of. I created the work by making a plot as a background, so I could tie the visual to the data. I then worked on making the drawing a visual representation of the data. I used the colors to show what time of day the data was and little background drawings to make it clear; sun and birds for morning, sunset and sports for afternoon, and moon and stars for the evening. I used handle bars to show the range of the data and a spot watch on the handle bars which says the mean of that data, and correlates to the mean data point. I also drew a bike path that goes along the bottom of the chart to show even more that the data is about biking.
 
 **3a. Revisit and summarize (6 points)** **What are the statistical tests the authors are using to address their main research question?**
 
@@ -268,4 +268,4 @@ The figure is not very cluttered, it is actually pretty simple. I would say ther
 
 **3d. Recommendations (can be longer than 4 sentences, 10 points)** **What recommendations would you make to make the figure better? What would you take out, add, or change? Provide explanations/justifications for each of your recommendations.**
 
-I think this figure could be much more informational with some small changes. I would recommend showing the underlying data with SE and CI to demonstrate how significant, and confident the research is in there findings of which predictors are correlated to stigmatization. I think if the figure was on an x y coordinate and there was more than one figure to show the data from all the predictors it would be a better figure.
+I think this figure could be much more informational with some small changes. I would recommend showing the underlying data with SE and CI to demonstrate how significant, and confident the research is in there findings of which predictors are correlated to stigmatization. I think if the figure was on an x and y coordinate system and there was more than one figure to show the data from all the predictors it would be a better figure.
